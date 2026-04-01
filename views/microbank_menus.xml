@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- root -->
+    <menuitem id="microbank_menu_root"
+              name="Microbank">
+
+        <!-- main -->
+        <menuitem id="loan_application_manager_analyst_menu"
+                  name="Prestamos"
+                  sequence="10"
+                  action="microbank.microbank_loan_application_analyst_act_window"
+                  groups="microbank.group_analyst,microbank.group_admin"/>
+
+        <!-- main -->
+        <menuitem id="loan_application_manager_menu"
+                  name="Prestamos"
+                  sequence="15"
+                  action="microbank.microbank_loan_application_manager_cashier_act_window"
+                  groups="microbank.group_manager,microbank.group_cashier"/>
+
+        <!-- main -->
+        <menuitem id="res_partner_menu"
+                  name="Clientes"
+                  sequence="20"
+                  action="microbank.res_partner_act_window"
+                  groups="microbank.group_admin"/>
+
+        <!-- main -->
+        <menuitem id="loan_payment_menu"
+                  name="Pagos"
+                  sequence="30"
+                  action="microbank.microbank_loan_payment_act_window"
+                  groups="microbank.group_cashier,microbank.group_admin"/>
+
+        <!-- main -->
+        <menuitem id="menu_reportes"
+                  name="Reportes"
+                  sequence="40"
+                  groups="microbank.group_analyst,microbank.group_admin"/>
+    </menuitem>
+</odoo>
