@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="action_report_loan_application_contract" model="ir.actions.report">
+            <field name="name">Contrato de prestamo</field>
+            <field name="model">microbank.loan.application</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">microbank.loan_application_contract_template</field>
+            <field name="report_file">microbank.loan_application_contract_template</field>
+            <field name="print_report_name">'Prestamo - %s' % (object.name)</field>
+        </record>
+    </data>
+</odoo>

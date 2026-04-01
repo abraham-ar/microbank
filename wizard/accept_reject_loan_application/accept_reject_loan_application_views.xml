@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="microbank_loan_application_accept_reject_view_form" model="ir.ui.view">
+        <field name="name">microbank.loan.application.accept.reject.view.form</field>
+        <field name="model">microbank.loan.application.accept.reject</field>
+        <field name="arch" type="xml">
+            <form string="Aceptar o rechazar prestamos">
+                <sheet>
+                    <notebook>
+                        <page>
+                            <field name="loan_ids"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <footer>
+                    <button name="action_aprobar" type="object" string="Aprobar"
+                            class="oe_highlight"/>
+                    <button name="action_rechazar" type="object" string="Rechazar"
+                            class="oe_highlight"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="microbank_loan_application_accept_reject_act_window" model="ir.actions.act_window">
+        <field name="name">Aprobar/rechazar prestamos</field>
+        <field name="res_model">microbank.loan.application.accept.reject</field>
+        <field name="view_mode">form</field>
+        <field name="binding_model_id" ref="model_microbank_loan_application"/>
+        <field name="target">new</field>
+    </record>
+</odoo>
