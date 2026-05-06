@@ -7,14 +7,12 @@
             <field name="groups" eval="[(4, ref('microbank.group_analyst'))]"/>
             <field name="domain_force">[('create_uid', '=', user.id)]</field>
         </record>
-
         <record id="rule_loan_application_manager" model="ir.rule">
             <field name="name">Gerente: puede ver todos los prestamos</field>
             <field name="model_id" ref="model_microbank_loan_application"/>
             <field name="groups" eval="[(4, ref('microbank.group_manager'))]"/>
             <field name="domain_force">[]</field>
         </record>
-
         <record id="rule_loan_application_cashier" model="ir.rule">
             <field name="name">Cajero: solo ve prestamos aprobados</field>
             <field name="model_id" ref="model_microbank_loan_application"/>

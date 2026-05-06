@@ -28,7 +28,6 @@
         </field>
     </record>
 
-
     <record id="res_partner_act_window" model="ir.actions.act_window">
         <field name="name">Clientes</field>
         <field name="res_model">res.partner</field>

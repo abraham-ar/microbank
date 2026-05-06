@@ -95,7 +95,9 @@ class LoanApplication(models.Model):
                 if monthly_interest_rate == 0:
                     rec.monthly_payment = loan_amount / term_months
                 else:
-                    rec.monthly_payment = (loan_amount * (monthly_interest_rate * (1 + monthly_interest_rate) ** term_months)) / ((1 + monthly_interest_rate) ** term_months - 1)
+                    rec.monthly_payment = (loan_amount * (
+                            monthly_interest_rate * (1 + monthly_interest_rate) ** term_months)) / (
+                                                  (1 + monthly_interest_rate) ** term_months - 1)
 
     @api.depends('monthly_payment', 'term_months')
     def _compute_total_to_pay(self):
@@ -118,6 +120,20 @@ class LoanApplication(models.Model):
                 progress = sum_payment * 100 / rec.total_to_pay
                 rec.progress = progress
 
+    @api.constrains('loan_amount')
+    def _check_description(self):
+        """
+        Verifica que el monto del prestamo no exceda el limite permitido
+        """
+        loan_limit = float(
+            self.env['ir.config_parameter']
+            .sudo()
+            .get_param('microbank.loan_amount_limit', default=10000)
+        )
+        for record in self:
+            if record.loan_amount > loan_limit or record.loan_amount < 0:
+                raise ValidationError(f"El monto del prestamo no debe de ser superior a {loan_limit}")
+
     @api.onchange('approval_date')
     def _onchange_approval_date(self):
         """
@@ -132,25 +148,14 @@ class LoanApplication(models.Model):
     def create(self, vals_list):
         """
         Sobreescribe al método create para:
-            - Verificar que el monto del prestamo no sea mayor a cierto valor
             - Generar la secuencia que se usara para el campo 'name' del prestamo
 
-        :param dict values: Campos a crear
+        :param dict vals_list: Campos a crear
         :return: Registros creados de la clase
         :rtype: microbank.loan.application
         """
-        LOAN_LIMIT = 100000
         for vals in vals_list:
-
-            loan_amount = vals.get('loan_amount', 0)
-            if loan_amount > LOAN_LIMIT:
-                raise ValidationError(
-                    f"El monto del préstamo no puede exceder {LOAN_LIMIT}"
-                )
-
-            if not vals.get('name') or vals['name'] == 'New':
-                vals['name'] = self.env['ir.sequence'].next_by_code('loan.application')
-
+            vals['name'] = self._generate_name(vals)
         return super().create(vals_list)
 
     def write(self, vals):
@@ -162,33 +167,11 @@ class LoanApplication(models.Model):
             :return: True para indicar que la actualizacion de los registros fue un exito
             :rtype: bool
             """
-
         old_states = {rec.id: rec.state for rec in self}
-
         res = super().write(vals)
-
         if 'state' in vals:
-
             for rec in self:
-
-                old_state = old_states[rec.id]
-
-                if old_state != rec.state:
-
-                    if rec.state == 'aprobado':
-
-                        template = self.env.ref(
-                            'microbank.mail_template_loan_application_approved'
-                        )
-                        template.send_mail(rec.id, force_send=True)
-
-                    elif rec.state == 'rechazado':
-
-                        template = self.env.ref(
-                            'microbank.mail_template_loan_application_rejected'
-                        )
-                        template.send_mail(rec.id, force_send=True)
-
+                self._send_email(rec, old_states[rec.id])
         return res
 
     def action_aprobar(self):
@@ -197,7 +180,6 @@ class LoanApplication(models.Model):
         """
         for rec in self:
             rec.state = 'aprobado'
-
             return self.env.ref('microbank.action_report_loan_application_contract').report_action(self)
 
     def action_pagar(self):
@@ -213,3 +195,21 @@ class LoanApplication(models.Model):
         """
         for rec in self:
             rec.state = 'rechazado'
+
+    def _generate_name(self, vals):
+        if not vals.get('name') or vals['name'] == 'New':
+            return self.env['ir.sequence'].next_by_code('loan.application')
+        return vals.get('name')
+
+    def _send_email(self, rec, old_state):
+        if old_state != rec.state:
+            if rec.state == 'aprobado':
+                template = self.env.ref(
+                    'microbank.mail_template_loan_application_approved'
+                )
+                template.send_mail(rec.id, force_send=True)
+            elif rec.state == 'rechazado':
+                template = self.env.ref(
+                    'microbank.mail_template_loan_application_rejected'
+                )
+                template.send_mail(rec.id, force_send=True)

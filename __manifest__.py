@@ -26,6 +26,7 @@
         'data/mail_template_loan_application_approved.xml',
         'data/mail_template_loan_application_rejected.xml',
         'wizard/accept_reject_loan_application/accept_reject_loan_application_views.xml',
+        'wizard/settings/res_config_settings_views.xml',
         'report/loan_application_contract/loan_application_contract_templates.xml',
         'report/loan_application_contract/loan_application_contract_report.xml',
         'views/res_partner_views.xml',
