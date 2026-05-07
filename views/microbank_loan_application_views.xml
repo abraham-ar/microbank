@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="microbank_loan_application_view_form" model="ir.ui.view">
+        <field name="name">microbank.loan.application.view.form</field>
+        <field name="model">microbank.loan.application</field>
+        <field name="group_ids" eval="[
+            (4, ref('microbank.group_analyst')),
+            (4, ref('microbank.group_admin'))
+            ]"/>
+        <field name="arch" type="xml">
+            <form string="Prestamo">
+                <header>
+                    <button name="action_aprobar"
+                            type="object" string="Aprobar"
+                            invisible="state != 'borrador'"
+                            class="oe_highlight"/>
+                    <button name="action_pagar"
+                            type="object" string="Marcar como pagado"
+                            invisible="state != 'aprobado'"
+                            class="oe_highlight"/>
+                    <button name="action_rechazar"
+                            type="object" string="Rechazar"
+                            invisible="state != 'borrador'"/>
+                    <button name="%(action_report_loan_application_contract)d"
+                            string="Imprimir contrato" type="action"
+                            invisible="state != 'aprobado'"
+                            class="btn-primary"/>
+                    <field name="state"
+                           widget="statusbar"
+                           statusbar_visible="borrador,aprobado,pagado"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" readonly="True"/>
+                            <field name="partner_id"/>
+                            <field name="loan_amount"/>
+                            <field name="interest_rate"/>
+                            <field name="term_months"/>
+                        </group>
+                        <group>
+                            <field name="monthly_payment" readonly="True"/>
+                            <field name="total_to_pay" readonly="True"/>
+                            <field name="approval_date"/>
+                            <field name="next_payment_date"/>
+                            <field name="progress" widget="percentpie"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="microbank_loan_application_view_list" model="ir.ui.view">
+        <field name="name">microbank.loan.application.view.list</field>
+        <field name="model">microbank.loan.application</field>
+        <field name="group_ids" eval="[
+            (4, ref('microbank.group_analyst')),
+            (4, ref('microbank.group_manager')),
+            (4, ref('microbank.group_cashier')),
+            (4, ref('microbank.group_admin'))
+        ]"/>
+        <field name="arch" type="xml">
+            <list string="Prestamos">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="loan_amount" optional="show"/>
+                <field name="interest_rate" optional="show"/>
+                <field name="term_months" optional="show"/>
+                <field name="state" optional="show"/>
+                <field name="monthly_payment" optional="show"/>
+                <field name="total_to_pay" optional="show"/>
+                <field name="approval_date" optional="show"/>
+                <field name="next_payment_date" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="microbank_loan_application_view_kanban" model="ir.ui.view">
+        <field name="name">microbank.loan.application.view.kanban</field>
+        <field name="model">microbank.loan.application</field>
+        <field name="group_ids" eval="[
+            (4, ref('microbank.group_analyst')),
+            (4, ref('microbank.group_admin'))
+        ]"/>
+        <field name="arch" type="xml">
+            <kanban>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="state"/>
+                <field name="progress"/>
+                <templates>
+                    <t t-name="card">
+                        <div>
+                            <strong>
+                                <field name="name"/>
+                            </strong>
+                        </div>
+                        <div>
+                            <strong>
+                                Cliente:
+                            </strong>
+                            <field name="partner_id"/>
+                        </div>
+                        <div>
+                            <strong>
+                                Estado:
+                            </strong>
+                            <field name="state"/>
+                        </div>
+                        <div>
+                            <strong>
+                                Progreso de pago:
+                            </strong>
+                            <field name="progress" widget="progressbar"/>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="microbank_loan_application_view_graph" model="ir.ui.view">
+        <field name="name">microbank.loan.application.view.graph</field>
+        <field name="model">microbank.loan.application</field>
+        <field name="group_ids" eval="[
+            (4, ref('microbank.group_analyst')),
+            (4, ref('microbank.group_admin'))
+        ]"/>
+        <field name="arch" type="xml">
+            <graph string="Graficos de prestamos">
+                <field name="loan_amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="microbank_loan_application_view_pivot" model="ir.ui.view">
+        <field name="name">microbank.loan.application.view.pivot</field>
+        <field name="model">microbank.loan.application</field>
+        <field name="group_ids" eval="[
+            (4, ref('microbank.group_analyst')),
+            (4, ref('microbank.group_admin'))
+        ]"/>
+        <field name="arch" type="xml">
+            <pivot string="Tabla de prestamos">
+                <field name="state" type="row"/>
+                <field name="approval_date" type="col" interval="month"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="microbank_loan_application_view_search" model="ir.ui.view">
+        <field name="name">microbank.loan.application.view.search</field>
+        <field name="model">microbank.loan.application</field>
+        <field name="arch" type="xml">
+            <search string="Prestamos">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <filter string="Aprobados"
+                        name="approved_loan_application"
+                        domain="[('state', '=', 'aprobado')]"
+                        groups="!microbank.group_cashier"/>
+                <filter string="Por aprobar"
+                        name="draft_loan_application"
+                        domain="[('state', '=', 'borrador')]"
+                        groups="!microbank.group_cashier"/>
+                <filter string="Pagados"
+                        name="paid_loan_application"
+                        domain="[('state', '=', 'pagado')]"
+                        groups="!microbank.group_cashier"/>
+                <filter string="Menores a 5000"
+                        name="short_loan_application"
+                        domain="[('loan_amount', '&lt;', 5000)]"/>
+                <filter string="Entre 5,000 y 10,000"
+                        name="medium_loan_application"
+                        domain="[('loan_amount', '&gt;=', 5000),('loan_amount', '&lt;=', 10000)]"/>
+                <filter string="Mayores a 10,000"
+                        name="large_loan_application"
+                        domain="[('loan_amount', '&gt;', 10000)]"/>
+                <group>
+                    <filter string="Status del prestamo"
+                            name="group_by_state"
+                            context="{'group_by': 'state'}"
+                            groups="!microbank.group_cashier"/>
+                </group>
+                <group>
+                    <filter string="Cliente"
+                            name="group_by_partner"
+                            context="{'group_by': 'partner_id'}"/>
+                </group>
+                <group>
+                    <filter string="Por trabajador"
+                            name="group_by_create_uid"
+                            context="{'group_by': 'create_uid'}"
+                            groups="microbank.group_manager,microbank.group_admin"/>
+                </group>
+                <group>
+                    <filter string="Por fecha de aprobacion"
+                            name="group_by_approval_date"
+                            context="{'group_by': 'approval_date'}"/>
+                </group>
+                <group>
+                    <filter string="Por proxima fecha de pago"
+                            name="group_by_next_payment"
+                            context="{'group_by': 'next_payment_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="microbank_loan_application_analyst_act_window" model="ir.actions.act_window">
+        <field name="name">Prestamos</field>
+        <field name="res_model">microbank.loan.application</field>
+        <field name="view_mode">list,kanban,form,graph,pivot</field>
+        <field name="search_view_id" ref="microbank.microbank_loan_application_view_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crea una nueva solicitud de prestamo
+            </p>
+        </field>
+    </record>
+
+    <record id="microbank_loan_application_manager_cashier_act_window" model="ir.actions.act_window">
+        <field name="name">Prestamos</field>
+        <field name="res_model">microbank.loan.application</field>
+        <field name="view_mode">list</field>
+        <field name="search_view_id" ref="microbank.microbank_loan_application_view_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crea una nueva solicitud de prestamo
+            </p>
+        </field>
+    </record>
+</odoo>

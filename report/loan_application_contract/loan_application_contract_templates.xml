@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <template id="loan_application_contract_template">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="web.external_layout">
+                        <div class="page">
+                            <h2 style="text-align:center; margin-bottom:30px;">
+                                Contrato de Préstamo
+                            </h2>
+                            <table class="table table-sm table-bordered" style="width:100%;">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <strong>Cliente</strong>
+                                        </td>
+                                        <td>
+                                            <span t-field="o.partner_id.name"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>Monto del préstamo</strong>
+                                        </td>
+                                        <td>
+                                            <span t-field="o.loan_amount"
+                                                  t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>Tasa de interés anual</strong>
+                                        </td>
+                                        <td>
+                                            <span t-field="o.interest_rate"/>
+                                            %
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>Plazo</strong>
+                                        </td>
+                                        <td>
+                                            <span t-field="o.term_months"/>
+                                            meses
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>Pago mensual</strong>
+                                        </td>
+                                        <td>
+                                            <span t-field="o.monthly_payment"
+                                                  t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>Total a pagar</strong>
+                                        </td>
+                                        <td>
+                                            <span t-field="o.total_to_pay"
+                                                  t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>Fecha de aprobación</strong>
+                                        </td>
+                                        <td>
+                                            <span t-field="o.approval_date"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>Próximo pago</strong>
+                                        </td>
+                                        <td>
+                                            <span t-field="o.next_payment_date"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <br/>
+                            <br/>
+                            <div style="margin-top:60px;">
+                                <table style="width:100%; text-align:center;">
+                                    <tr>
+                                        <td>
+                                            ___________________________
+                                            <br/>
+                                            Firma del cliente
+                                        </td>
+                                        <td>
+                                            ___________________________
+                                            <br/>
+                                            Representante de la empresa
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>
